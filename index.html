@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Fabforge — Пульт мировой истории</title>
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230d0d0f'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-family='Montserrat, sans-serif' font-weight='700' font-size='60' fill='%23d4af37'>F</text></svg>">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body onload="initApp()">
+
+    <!-- Экран загрузки -->
+    <div id="loading-screen" class="loading-overlay">
+        <div class="loading-content">
+            <h1 class="pulse-logo">FABFORGE</h1>
+            <p id="loading-sub" class="loading-slogan" style="display: none;"></p>
+        </div>
+    </div>
+
+    <!-- Главный экран -->
+    <div id="hero-screen" class="hero" style="display: none;">
+        <header class="top-bar">
+            <div class="logo-area">
+                <span class="brand">FABFORGE</span>
+                <span class="divider">—</span>
+                <span class="subtitle">Пульт мировой истории</span>
+            </div>
+            <div class="terminal-status">
+                <span class="pulse-dot"></span>
+                <span class="status-text">ГЛАВНАЯ</span>
+                <span class="clock" id="clock-hero">00:00:00</span>
+            </div>
+            <div class="corner-menu">
+                <button id="btn-hero-menu" class="menu-toggle-btn" onclick="toggleMenu('hero-menu')">•••</button>
+                <div id="hero-menu" class="dropdown-content" style="display: none;">
+                    <button onclick="openInstruction()">Инструкция</button>
+                    <button onclick="openDonations()">Донаты</button>
+                    <button onclick="openAboutAuthor()">Об авторе</button>
+                    <button onclick="alert('Настройки в разработке.')">Настройки</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="hero-content fade-in">
+            <h1>FABFORGE</h1>
+            <p class="slogan">Место, где рождается история</p>
+            <button class="btn-main" onclick="openApp()">Открыть карту мира</button>
+        </div>
+    </div>
+
+    <!-- Меню: Карты -->
+    <div id="app-screen" class="app-container" style="display: none;">
+        <header class="top-bar">
+            <div class="logo-area">
+                <span class="brand">FABFORGE</span>
+                <span class="divider">—</span>
+                <span class="subtitle">Карты</span>
+            </div>
+            <div class="terminal-status">
+                <span class="pulse-dot"></span>
+                <span class="status-text">КАРТЫ</span>
+                <span class="clock" id="clock-app">00:00:00</span>
+            </div>
+            <div class="nav-controls">
+                <button class="back-arrow-btn" onclick="confirmAction('back')" title="Назад">←</button>
+                <button class="back-btn" onclick="confirmAction('hero')" title="На главную">← На главную</button>
+                <div class="corner-menu">
+                    <button id="btn-app-menu" class="menu-toggle-btn" onclick="toggleMenu('app-menu')">•••</button>
+                    <div id="app-menu" class="dropdown-content" style="display: none;">
+                        <button onclick="openInstruction()">Инструкция</button>
+                        <button onclick="openDonations()">Донаты</button>
+                        <button onclick="openAboutAuthor()">Об авторе</button>
+                        <button onclick="alert('Настройки в разработке.')">Настройки</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="workspace fade-in">
+            <div class="maps-grid-container">
+                <div class="map-card">
+                    <div class="map-flag-banner">
+                        <img src="flags/russia/russia.png" alt="Россия" class="flag-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <span class="fallback-text" style="display: none;">Россия</span>
+                    </div>
+                    <div class="map-card-body">
+                        <h3>Россия</h3>
+                        <p class="map-card-desc">Исторические сценарии, территориальное планирование и государственное управление.</p>
+                        <button class="btn-main" onclick="openRussiaMaps()">Выбрать карту</button>
+                    </div>
+                </div>
+
+                <div class="map-card dev-card">
+                    <div class="dev-banner"></div>
+                    <div class="map-flag-banner">
+                        <img src="flags/europe/europe.png" alt="Европа" class="flag-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <span class="fallback-text" style="display: none;">Европа</span>
+                    </div>
+                    <div class="map-card-body">
+                        <h3>Европа</h3>
+                        <p class="map-card-desc">Региональные сценарии европейского континента.</p>
+                        <button class="btn-main disabled-btn" disabled>Выбрать карту</button>
+                    </div>
+                </div>
+
+                <div class="map-card dev-card">
+                    <div class="dev-banner"></div>
+                    <div class="map-flag-banner">
+                        <img src="flags/global/global.png" alt="Глобальный мир" class="flag-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <span class="fallback-text" style="display: none;">Глобальный мир</span>
+                    </div>
+                    <div class="map-card-body">
+                        <h3>Глобальный мир</h3>
+                        <p class="map-card-desc">Полномасштабная планетарная карта для мировой геополитической кампании.</p>
+                        <button class="btn-main disabled-btn" disabled>Выбрать карту</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Меню: Россия (Эпохи) -->
+    <div id="russia-maps-screen" class="app-container" style="display: none;">
+        <header class="top-bar">
+            <div class="logo-area">
+                <span class="brand">FABFORGE</span>
+                <span class="divider">—</span>
+                <span class="subtitle">Россия</span>
+            </div>
+            <div class="terminal-status">
+                <span class="pulse-dot"></span>
+                <span class="status-text">РОССИЯ</span>
+                <span class="clock" id="clock-russia">00:00:00</span>
+            </div>
+            <div class="nav-controls">
+                <button class="back-arrow-btn" onclick="confirmAction('back')" title="Назад">←</button>
+                <button class="back-btn" onclick="confirmAction('hero')" title="На главную">← На главную</button>
+                <div class="corner-menu">
+                    <button id="btn-russia-menu" class="menu-toggle-btn" onclick="toggleMenu('russia-menu')">•••</button>
+                    <div id="russia-menu" class="dropdown-content" style="display: none;">
+                        <button onclick="openInstruction()">Инструкция</button>
+                        <button onclick="openDonations()">Донаты</button>
+                        <button onclick="openAboutAuthor()">Об авторе</button>
+                        <button onclick="alert('Настройки в разработке.')">Настройки</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="workspace fade-in">
+            <div class="maps-grid-container">
+                <div class="map-card">
+                    <div class="map-flag-banner">
+                        <img src="flags/russia/russia.png" alt="2025 год" class="flag-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <span class="fallback-text" style="display: none;">2025 год</span>
+                    </div>
+                    <div class="map-card-body">
+                        <h3>2025 год</h3>
+                        <p class="map-card-desc">Российская Федерация: современный этап государственного управления и стратегии.</p>
+                        <button class="btn-main" onclick="openGameMap2025()">Выбрать карту</button>
+                    </div>
+                </div>
+
+                <div class="map-card dev-card">
+                    <div class="dev-banner"></div>
+                    <div class="map-flag-banner">
+                        <img src="flags/russia/ussr.png" alt="1939 год" class="flag-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <span class="fallback-text" style="display: none;">1939 год</span>
+                    </div>
+                    <div class="map-card-body">
+                        <h3>1939 год</h3>
+                        <p class="map-card-desc">Союз Советских Социалистических Республик накануне масштабных испытаний.</p>
+                        <button class="btn-main disabled-btn" disabled>Выбрать карту</button>
+                    </div>
+                </div>
+
+                <div class="map-card dev-card">
+                    <div class="dev-banner"></div>
+                    <div class="map-flag-banner">
+                        <img src="flags/russia/empire.png" alt="1914 год" class="flag-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <span class="fallback-text" style="display: none;">1914 год</span>
+                    </div>
+                    <div class="map-card-body">
+                        <h3>1914 год</h3>
+                        <p class="map-card-desc">Российская империя в период Первой мировой войны и глобальных перемен.</p>
+                        <button class="btn-main disabled-btn" disabled>Выбрать карту</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ИГРОВОЙ ЭКРАН -->
+    <div id="game-map-screen" class="app-container" style="display: none;">
+        <header class="top-bar">
+            <div class="logo-area">
+                <span class="brand">FABFORGE</span>
+                <span class="divider">—</span>
+                <span class="subtitle">Россия 2025</span>
+            </div>
+            <div class="terminal-status">
+                <span class="pulse-dot"></span>
+                <span class="status-text">RU 2025</span>
+                <span class="clock" id="clock-game">00:00:00</span>
+            </div>
+            <div class="nav-controls">
+                <button class="back-arrow-btn" onclick="confirmAction('back')" title="Назад">←</button>
+                <button class="back-btn" onclick="confirmAction('hero')" title="На главную">← На главную</button>
+                <div class="corner-menu">
+                    <button id="btn-game-menu" class="menu-toggle-btn" onclick="toggleMenu('game-menu')">•••</button>
+                    <div id="game-menu" class="dropdown-content" style="display: none;">
+                        <button onclick="openInstruction()">Инструкция</button>
+                        <button onclick="openDonations()">Донаты</button>
+                        <button onclick="openAboutAuthor()">Об авторе</button>
+                        <button onclick="alert('Настройки в разработке.')">Настройки</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="game-workspace fade-in">
+            <div class="map-viewport">
+                <!-- Панель инструментов карты в левом верхнем углу -->
+                <div class="map-toolbar">
+                    <button id="map-clear-btn" class="map-btn clear-btn" onclick="clearSelectionFromPanel()" title="Снять выделение">✕</button>
+                    <button class="map-btn" onclick="zoomIn()" title="Приблизить (+)">+</button>
+                    <button class="map-btn" onclick="zoomOut()" title="Отдалить (-)">-</button>
+                    
+                    <!-- ПОИСК НА КАРТЕ -->
+                    <div class="map-search-container">
+                        <input type="text" id="map-search-input" class="map-search-input" placeholder="Поиск региона..." oninput="searchRegion(this.value)" autocomplete="off">
+                        <div id="search-dropdown" class="search-dropdown" style="display: none;"></div>
+                    </div>
+                </div>
+
+                <div id="map-inner-container" class="map-inner-container">
+                    <p style="color: #71717a; text-align: center;">Загрузка карты мира...</p>
+                </div>
+            </div>
+
+            <!-- Выдвижная панель данных (ширина 520px) -->
+            <div id="data-panel" class="data-panel-container">
+                <button id="panel-toggle-btn" class="panel-toggle-btn" onclick="toggleDataPanel()" title="Свернуть панель">
+                    →
+                </button>
+                <div class="data-panel-content">
+                    <h3>Панель управления</h3>
+                    <p>Нажмите на любой регион на карте, чтобы получить подробную информацию о территории.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН ИНСТРУКЦИИ -->
+    <div id="instruction-screen" class="app-container" style="display: none;">
+        <header class="top-bar">
+            <div class="logo-area">
+                <span class="brand">FABFORGE</span>
+                <span class="divider">—</span>
+                <span class="subtitle">Инструкция</span>
+            </div>
+            <div class="terminal-status">
+                <span class="pulse-dot"></span>
+                <span class="status-text">ИНСТРУКЦИЯ</span>
+                <span class="clock" id="clock-instruction">00:00:00</span>
+            </div>
+            <div class="nav-controls">
+                <button class="back-arrow-btn" onclick="confirmAction('back')" title="Назад">←</button>
+                <button class="back-btn" onclick="confirmAction('hero')" title="На главную">← На главную</button>
+                <div class="corner-menu">
+                    <button id="btn-instruction-menu" class="menu-toggle-btn" onclick="toggleMenu('instruction-menu')">•••</button>
+                    <div id="instruction-menu" class="dropdown-content" style="display: none;">
+                        <button onclick="openDonations()">Донаты</button>
+                        <button onclick="openAboutAuthor()">Об авторе</button>
+                        <button onclick="alert('Настройки в разработке.')">Настройки</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="instruction-workspace fade-in">
+            <div class="instruction-content-container">
+                
+                <h2>Инструкция по использованию Fabforge</h2>
+
+                <!-- 1. Что такое Fabforge? -->
+                <section class="instruction-section">
+                    <h3>Что такое Fabforge?</h3>
+                    <p>Fabforge — это не просто сайт, а настоящий интерактивный пульт управления геополитическими данными и мировой историей. Это цифровая интерактивная карта, созданная для того, чтобы в пару кликов изучать, сопоставлять и детально анализировать показатели регионов самых разных государств.</p>
+                    <p>Главная фишка проекта — всё собрано в одном месте. Забудь про метания по десяткам разрозненных вкладок, громоздких таблиц и бесконечных поисков. Здесь вся ключевая информация, социально-экономические параметры и региональная специфика структурированы так, чтобы работать с ними было не только полезно, но и чертовски удобно. Хочешь оценить состояние конкретной территории, сопоставить цифры или увидеть общую картину мира в динамике? Пожалуйста, всё под рукой, на одном экране, в едином понятном пространстве и с крутой навигацией!</p>
+                </section>
+
+                <!-- 2. Навигация по сайту (Интерфейс) -->
+                <section class="instruction-section">
+                    <h3>Навигация по сайту (Интерфейс)</h3>
+                    <p>Управляться с сайтом предельно просто и интуитивно — независимо от того, открыл ты его на ПК или на смартфоне:</p>
+                    
+                    <h4>Главный экран и верхняя панель:</h4>
+                    <ul>
+                        <li>Слева красуется фирменное название <b>«FABFORGE — Пульт мировой истории»</b>, а рядом с ним работают живые часы, которые всегда подскажут точное время.</li>
+                        <li>Справа вверху находится кнопка вызова меню (те самые три точки) и индикатор текущего раздела.</li>
+                        <li>В центре главного экрана расположена главная пусковая кнопка <b>«Открыть карту мира»</b>, с которой и начинается всё самое интересное.</li>
+                    </ul>
+                    <div class="instruction-media-box">
+                        <img src="instruction/screenshots/glavnaya.png" alt="Главная страница Fabforge" class="instruction-img">
+                        <p class="instruction-media-caption">Главный экран Fabforge</p>
+                    </div>
+
+                    <h4>Всплывающее меню (кнопка с тремя точками):</h4>
+                    <p>По клику на неё открывается аккуратная панель быстрого доступа, где собраны ключевые разделы:</p>
+                    <ul>
+                        <li><b>Инструкция</b> — подробное руководство по использованию пульта.</li>
+                        <li><b>Донаты</b> — возможность поддержать проект.</li>
+                        <li><b>Об авторе</b> — информация о создателе.</li>
+                        <li><b>Настройки</b> — кастомизация под личные предпочтения.</li>
+                    </ul>
+                    <div class="instruction-media-box">
+                        <img src="instruction/screenshots/menyu.png" alt="Главное меню" class="instruction-img">
+                        <p class="instruction-media-caption">Меню быстрого доступа</p>
+                    </div>
+
+                    <h4>Элементы навигации на страницах:</h4>
+                    <p>Когда ты проваливаешься вглубь разделов или открываешь карту, на помощь приходят удобные элементы управления:</p>
+                    <ul>
+                        <li><b>Стрелочка влево (←)</b> — классическая кнопка «Назад», которая возвращает на предыдущий экран.</li>
+                        <li><b>Кнопка с текстом «← На главную»</b> — позволяет в один клик выпрыгнуть из любого уголка сайта обратно на самый первый экран.</li>
+                    </ul>
+                    <div class="instruction-media-box">
+                        <img src="instruction/screenshots/knopki.png" alt="Кнопки навигации" class="instruction-img">
+                        <p class="instruction-media-caption">Управляющие стрелочки и кнопки возврата</p>
+                    </div>
+                </section>
+
+                <!-- 3. Управление интерактивной картой -->
+                <section class="instruction-section">
+                    <h3>Управление интерактивной картой</h3>
+                    <p>Взаимодействие с картой мира в Fabforge сделано максимально интуитивно и удобно:</p>
+                    <ul>
+                        <li>Когда ты просто водишь мышкой по карте, границы регионов подсвечиваются и «загораются», сразу показывая, на какую именно территорию падает твой взгляд.</li>
+                        <li>Стоит кликнуть по нужной области (или коснуться её пальчиком на экране), как регион полностью заливается цветом, фиксируя твой выбор.</li>
+                    </ul>
+                    <div class="instruction-media-box">
+                        <video src="instruction/videos/uik-kursor.mp4" controls autoplay muted loop class="instruction-video"></video>
+                        <p class="instruction-media-caption">Выбор региона и курсор на карте</p>
+                    </div>
+
+                    <p>Как только регион выбран, справа мгновенно активируется специальная боковая панель. Именно в ней сосредоточены все элементы управления данной территорией и открывается пространство для работы с её параметрами. Для поиска региона также можно использовать встроенный поиск.</p>
+                    <div class="instruction-media-box">
+                        <video src="instruction/videos/uik-panel.mp4" controls autoplay muted loop class="instruction-video"></video>
+                        <p class="instruction-media-caption">Работа с боковой панелью управления</p>
+                    </div>
+                    <div class="instruction-media-box">
+                        <img src="instruction/screenshots/karta.png" alt="Общий вид карты" class="instruction-img">
+                        <p class="instruction-media-caption">Интерактивная карта мира</p>
+                    </div>
+                </section>
+
+                <!-- 4. Разбор параметров и показателей -->
+                <section class="instruction-section">
+                    <h3>Разбор параметров и показателей (Как всё считается?)</h3>
+                    
+                    <!-- Кнопка-скрепочка с SVG (текст сплошной строкой) -->
+                    <div class="author-note-container">
+                        <button class="author-note-btn" onclick="toggleAuthorNote()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                            <span>Важное примечание от автора (нажмите, чтобы прочитать)</span>
+                        </button>
+                        <div id="author-note-box" class="author-note-box" style="display: none;">
+                            <span class="author-note-text">Всё информационное наполнение, показатели и статистические данные, представленные в проекте Fabforge, собраны и обработаны на основе архивных баз данных. Мы постарались сделать проект максимально достоверным и приближённым к реальной исторической картине. Однако стоит учитывать, что работа с гигантскими архивами неизбежно несёт в себе определённые погрешности. Возможны заметные расхождения с текущей или абсолютно точной официальной статистикой современности. Fabforge задумывался в первую очередь как интерактивный пульт для глубокой аналитики, изучения тенденций и работы с данными, а не как сухой бухгалтерский отчёт. Поэтому относись к цифрам с пониманием общей концепции: здесь важна сама логика процессов, масштабы и динамика, а не грамм-в-грамм выверенные до копеек официальные сводки!</span>
+                        </div>
+                    </div>
+
+                    <div class="parameters-list">
+                        <div class="param-item">
+                            <h4>Валовой региональный продукт (ВРП) и ВРП на душу населения</h4>
+                            <p>Главный индикатор экономического здоровья территории. Показывает общую стоимость всех произведённых в регионе товаров и услуг. А ВРП на душу показывает, сколько этого «богатства» приходится в среднем на одного жителя.</p>
+                            <p class="formula-text">Общий ВРП — сумма валовой добавленной стоимости всех отраслей экономики региона за год (промышленность, сельское хозяйство, услуги и т.д.). ВРП на душу населения — общий объем ВРП делится на общую численность населения региона.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Численность и динамика населения</h4>
+                            <p>Базовый демографический показатель, отражающий сколько всего людей живёт на территории и как это число меняется со временем (растёт или падает).</p>
+                            <p class="formula-text">Численность — общая численность населения региона. Динамика (прирост/убыль) — разница между численностью населения на период учёта и на следующий период.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Уровень безработицы</h4>
+                            <p>Доля трудоспособных людей, которые не имеют работы.</p>
+                            <p class="formula-text">Количество официально зарегистрированных безработных (или ищущих работу по методологии МОТ) делится на общую численность рабочей силы, а результат умножается на 100%.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Доля дорог, соответствующих нормативам</h4>
+                            <p>Качество дорожной инфраструктуры региона — какой процент автодорог общего пользования находится в нормальном техническом состоянии (без ям, с нормальным покрытием).</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Уровень газификации региона</h4>
+                            <p>Насколько инфраструктура региона обеспечена природным газом (жилые дома, котельные, предприятия).</p>
+                            <p class="formula-text">Количество газифицированных объектов по отношению к общая численность потенциально возможных объектов, умноженное на 100%.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Общий уровень преступности на 100 тысяч населения</h4>
+                            <p>Криминогенная обстановка в регионе, показывающая концентрацию правонарушений.</p>
+                            <p class="formula-text">Общее количество зарегистрированных преступлений за год делится на численность населения региона, а полученный результат умножается на 100 000.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Уровень дотационности региона</h4>
+                            <p>Финансовая самостоятельность субъекта. Показывает, насколько региональный бюджет зависит от денежных вливаний (дотаций) из федерального центра.</p>
+                            <p class="formula-text">Объем безвозмездных поступлений делится на общие доходы регионального бюджета, умножается на 100%.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Государственный долг региона</h4>
+                            <p>Общая сумма долговых обязательств региона перед кредиторами (банками, федеральным бюджетом, владельцами облигаций).</p>
+                            <p class="formula-text">Сумма всех непогашенных кредитов, займов и выпущенных ценных бумаг региона.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Миграция (эмиграция и иммиграция)</h4>
+                            <p>Движение людей, въезжающих в регион на постоянное жительство или уезжающих из него.</p>
+                            <p class="formula-text">Иммиграция — общее число прибывших в регион за период. Эмиграция — общее число выбывших из региона за тот же период. Миграционный прирост — разница между числом прибывших и выбывших.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Инфляция по региону</h4>
+                            <p>Скорость, с которой растут цены на товары и услуги, показывающая, насколько сильно обесцениваются деньги в конкретном субъекте.</p>
+                            <p class="formula-text">Процентное изменение стоимости стандартной потребительской корзины.</p>
+                        </div>
+
+                        <!-- ПОКАЗАТЕЛИ ИЗ ФАЙЛА «А» -->
+                        <div class="param-item">
+                            <h4>Налоговое бремя</h4>
+                            <p>Финансовая нагрузка на экономику и бизнес — какую долю своих доходов компании и граждане отдают в виде налогов.</p>
+                            <p class="formula-text">Общая сумма собранных налогов делится на суммарный объем ВРП региона, а результат умножается на 100%.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Стоимость фиксированного набора товаров и услуг</h4>
+                            <p>Реальная цена базовой потребительской корзины (продукты, одежда, лекарства, транспорт), необходимой для жизни человека в месяц.</p>
+                            <p class="formula-text">Суммируются текущие рыночные цены на весь фиксированный перечень базовых товаров и услуг в регионе.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Объем инвестиций</h4>
+                            <p>Приток реальных денег в развитие территории — в строительство заводов, модернизацию инфраструктуры, покупку оборудования и запуск новых проектов.</p>
+                            <p class="formula-text">Сумма всех денежных вложений (капитальных инвестиций) со стороны бизнеса и государства за определенный период.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Доля малого и среднего предпринимательства (МСП) в экономике</h4>
+                            <p>Насколько сильно развит малый и средний бизнес и какой вклад он вносит в общую экономическое благополучие региона.</p>
+                            <p class="formula-text">Объем продукции или доходов, созданных предприятиями МСП, делится на общий ВРП региона, умножается на 100%.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Доля прибыльных предприятий</h4>
+                            <p>Индикатор финансового здоровья коммерческого сектора — какой процент компаний работает в плюс, а не терпит убытки.</p>
+                            <p class="formula-text">Количество предприятий с положительной прибылью делится на общее число зарегистрированных в регионе предприятий, умножается на 100%.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Коэффициент рождаемости (число детей на одну женщину)</h4>
+                            <p>Главный демографический показатель, показывающий среднее количество детей, которое рожает женщина за свою репродуктивную жизнь.</p>
+                            <p class="formula-text">Статистический расчёт на основе общего числа родившихся детей и численности женщин репродуктивного возраста.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Средняя продолжительность жизни</h4>
+                            <p>Сколько в среднем лет предстоит прожить человеку, родившемуся в данном регионе, при текущем уровне медицины и условий жизни.</p>
+                            <p class="formula-text">Демографический расчёт на основе возрастных коэффициентов смертности населения в текущем периоде.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Уровень бедности</h4>
+                            <p>Процент жителей, чьих доходов не хватает на покрытие базовых жизненных потребностей.</p>
+                            <p class="formula-text">Численность населения с доходом ниже официального прожиточного минимума делится на общую численность населения региона, умножается на 100%.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Городское и сельское население</h4>
+                            <p>Соотношение людей, проживающих в городах, и тех, кто живёт в сельской местности.</p>
+                            <p class="formula-text">Численность городского и сельского населения по отдельности соотносится с общей численностью жителей региона (в процентах).</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Качество транспортной сети</h4>
+                            <p>Насколько развиты логистические артерии региона — качество дорог, регулярность и скорость сообщения, доступность общественного транспорта.</p>
+                            <p class="formula-text">Комплексный индекс, учитывающий плотность дорожного покрытия, скорость движения и пассажиропоток.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Износ коммунальных сетей</h4>
+                            <p>Техническое состояние инфраструктуры — насколько изношены трубы водопроводов, теплотрассы и электрические сети.</p>
+                            <p class="formula-text">Протяжённость сетей, требующих срочной замены или ремонта, делится на общую протяжённость коммунальных сетей региона, умножается на 100%.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Средний балл ЕГЭ по региону</h4>
+                            <p>Уровень подготовки школьников и общее качество среднего образования на территории.</p>
+                            <p class="formula-text">Сумма всех баллов, набранных выпускниками на экзаменах, делится на общую численность сдавших школьников.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Количество выданных патентов на изобретения на 10 тысяч жителей</h4>
+                            <p>Уровень инновационной активности, науки и технологического потенциала региона.</p>
+                            <p class="formula-text">Число официально зарегистрированных патентных заявок и изобретений делится на численность населения региона.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Обеспеченность врачами и средним медперсоналом на 10 тысяч жителей</h4>
+                            <p>Доступность и укомплектованность системы здравоохранения медицинскими кадрами.</p>
+                            <p class="formula-text">Общее количество практикующих врачей и медсестёр делится на численность населения региона.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Обеспеченность учреждениями культуры</h4>
+                            <p>Развитие культурной инфраструктуры и доступность досуга для жителей (музеи, театры, библиотеки и др.).</p>
+                            <p class="formula-text">Количество культурных учреждений соотносится со 100 тысячами населения региона.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Объем выбросов загрязняющих веществ в атмосферу</h4>
+                            <p>Экологическая нагрузка на воздух. Разделяется по источникам: от стационарных (заводы, фабрики, котельные) и от транспорта (автомобили).</p>
+                            <p class="formula-text">Общая масса вредных веществ (в тоннах), выброшенных в атмосферу заводами и транспортом за год.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Энергетика (выработка и потребление)</h4>
+                            <p>Энергетический баланс региона — сколько электроэнергии производят местные станции и сколько реально расходуют заводы и жители.</p>
+                            <p class="formula-text">Выработка — суммарный объем произведённой электроэнергии. Потребление — общий объем энергии, израсходованный внутри региона.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Цифровизация</h4>
+                            <p>Уровень развития цифровых технологий, проникновения скоростного интернета и электронных сервисов.</p>
+                            <p class="formula-text">Количество домохозяйств с доступом к интернету, делённое Общее количество домохозяйств региона и умноженное на 100%.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Ввод жилья на душу населения (квадратные метры)</h4>
+                            <p>Активность строительного сектора — сколько новых квадратных метров жилья сдаётся в эксплуатацию.</p>
+                            <p class="formula-text">Общая площадь введённых в строй жилых зданий делится на численность населения региона.</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Коэффициент доступности жилья</h4>
+                            <p>Насколько реально для обычной семьи приобрести собственную квартиру (сколько лет нужно откладывать весь семейный доход).</p>
+                            <p class="formula-text">Средняя стоимость стандартной квартиры делится на среднегодовой совокупный доход семьи (без учёта бытовых и многих других расходов).</p>
+                        </div>
+
+                        <div class="param-item">
+                            <h4>Мобилизационный ресурс</h4>
+                            <p>Потенциал региона в плане человеческих ресурсов, необходимых для обеспечения безопасности, обороноспособности и стабильности в критических ситуациях.</p>
+                            <p class="formula-text">Численность граждан военнообязанного возраста, способных нести службу.</p>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- 5. Секреты (Скрытая пасхалка с буквой "ч") -->
+                <section class="instruction-section">
+                    <h3>Секреты</h3>
+                    <p>Здесь таится <span id="secret-trigger" onclick="revealEasterEgg()" title="" style="cursor: pointer;">ч</span>то-то интересное... Но просто так это не увидеть. Попробуй отыскать секретный ключ на этой странице!</p>
+                    <p>Интерактивная пасхалка: секретное сердечко в Челябинской области</p>
+
+                    <!-- Скрытая пасхалка -->
+                    <div id="secret-easter-egg-container" style="display: none; margin-top: 20px;" class="fade-in">
+                        <div class="donations-card" style="border-color: #d4af37; background: rgba(212, 175, 55, 0.05); max-width: 100%;">
+                            <h4 style="color: #d4af37; margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#d4af37"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                Пасхалка разработчика: Челябинская область
+                            </h4>
+                            <p style="color: #f4f4f5; font-size: 0.95rem; line-height: 1.6; margin-bottom: 0;">
+                                На карте России зашито секретное сердечко в Челябинской области!
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН ОБ АВТОРЕ -->
+    <div id="about-screen" class="app-container" style="display: none;">
+        <header class="top-bar">
+            <div class="logo-area">
+                <span class="brand">FABFORGE</span>
+                <span class="divider">—</span>
+                <span class="subtitle">Об авторе</span>
+            </div>
+            <div class="terminal-status">
+                <span class="pulse-dot"></span>
+                <span class="status-text">ОБ АВТОРЕ</span>
+                <span class="clock" id="clock-about">00:00:00</span>
+            </div>
+            <div class="nav-controls">
+                <button class="back-arrow-btn" onclick="confirmAction('back')" title="Назад">←</button>
+                <button class="back-btn" onclick="confirmAction('hero')" title="На главную">← На главную</button>
+                <div class="corner-menu">
+                    <button id="btn-about-menu" class="menu-toggle-btn" onclick="toggleMenu('about-menu')">•••</button>
+                    <div id="about-menu" class="dropdown-content" style="display: none;">
+                        <button onclick="openInstruction()">Инструкция</button>
+                        <button onclick="openDonations()">Донаты</button>
+                        <!-- Пункт "Об авторе" убран на странице Об авторе -->
+                        <button onclick="alert('Настройки в разработке.')">Настройки</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="instruction-workspace fade-in">
+            <div class="instruction-content-container">
+                <h2>Об авторе проекта</h2>
+                <div class="instruction-section">
+                    <p>Привет всем, кто заглянул на этот сайт! Меня зовут Кирилл, и я создатель Fabforge.</p>
+                    <p>Если честно, у меня нет за плечами какого-то профессионального бэкграунда в программировании, а этот сайт — мой самый первый веб-проект в жизни. Когда я задумывал эту историю, у меня не было готовых шаблонов или команды разработчиков. Была лишь идея, огромное желание и куча времени, потраченного на то, чтобы разобраться во всём самостоятельно.</p>
+                    <p>Всё, что вы видите на этом пульте — от логики до структуры и наполнения — результат долгой работы, копания в архивах и стремления сделать удобный инструмент для тех, кто, как и я, любит историю, географию и глубокую аналитику.</p>
+                    <p>Надеюсь, тебе понравится пользоваться Fabforge так же сильно, как мне нравилось его создавать!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран донатов -->
+    <div id="donations-screen" class="app-container" style="display: none;">
+        <header class="top-bar">
+            <div class="logo-area">
+                <span class="brand">FABFORGE</span>
+                <span class="divider">—</span>
+                <span class="subtitle">Донаты</span>
+            </div>
+            <div class="terminal-status">
+                <span class="pulse-dot"></span>
+                <span class="status-text">ДОНАТЫ</span>
+                <span class="clock" id="clock-donations">00:00:00</span>
+            </div>
+            <div class="nav-controls">
+                <button class="back-arrow-btn" onclick="confirmAction('back')" title="Назад">←</button>
+                <button class="back-btn" onclick="confirmAction('hero')" title="На главную">← На главную</button>
+                <div class="corner-menu">
+                    <button id="btn-donations-menu" class="menu-toggle-btn" onclick="toggleMenu('donations-menu')">•••</button>
+                    <div id="donations-menu" class="dropdown-content" style="display: none;">
+                        <button onclick="openInstruction()">Инструкция</button>
+                        <button onclick="openAboutAuthor()">Об авторе</button>
+                        <button onclick="alert('Настройки в разработке.')">Настройки</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="hero-content fade-in">
+            <div class="donations-card">
+                <p class="donations-desc">
+                    Единственный доступный способ поддержки автора на данный момент — это наш официальный <b>Boosty</b>.<br>
+                    Получилось подключить только его, но в будущем обязательно появятся и другие варианты поддержки!
+                </p>
+                <a href="https://boosty.to/garibaldi_zone" target="_blank" class="btn-main boosty-link-btn">
+                    Перейти на Boosty
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения -->
+    <div id="confirm-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <p id="confirm-modal-text" class="modal-text">Вы точно хотите вернуться?</p>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-yes" onclick="executeAction()">Да, погнали</button>
+                <button class="btn-modal btn-no" onclick="closeModal()">Нет, стой</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно рекомендации инструкции -->
+    <div id="instruction-prompt-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <p class="modal-text">Рекомендуется для начала прочитать инструкцию по использованию карты</p>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-yes" onclick="openInstructionAndApp()">Да, открывай</button>
+                <button class="btn-modal btn-no" onclick="skipInstructionAndOpenApp()">Не, не надо</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="map.js"></script>
+    <script src="maps/russia/2025/ru_map_2025.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
