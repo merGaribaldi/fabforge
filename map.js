@@ -314,9 +314,20 @@ function getRegionIndicatorsData(regionId) {
 
 function updateDataPanelForRegion(regionId) {
     currentSelectedRegionId = regionId;
+    const rawName = RU_2025_DATA.regionNames[regionId] || regionId;
+
+    // Подставляем название выбранного региона в строку поиска (без открытия выпадающего списка)
+    const searchInput = document.getElementById('map-search-input');
+    if (searchInput) {
+        searchInput.value = rawName;
+    }
+    const dropdown = document.getElementById('search-dropdown');
+    if (dropdown) {
+        dropdown.style.display = 'none';
+    }
+
     const content = document.querySelector('.data-panel-content');
     if (content) {
-        const rawName = RU_2025_DATA.regionNames[regionId] || regionId;
         const formattedNameHtml = RU_2025_DATA.getFormattedRegionName(regionId, rawName);
 
         content.innerHTML = `
